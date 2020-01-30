@@ -1,6 +1,7 @@
 fn main() {
     let input = "yapple";
     // let result = the_letter_a(input);
+
     let result = input.get(0..2).unwrap();
     println!("{:?}", result);
 }
@@ -17,6 +18,27 @@ fn match_literal(expected: &'static str) -> impl Fn(&str) -> Result<(&str, ()), 
         Some(next) if next == expected => Ok((&input[expected.len()..], ())),
         _ => Err(input),
     }
+}
+
+fn identifier(input: &str) -> Result<(&str, String), &str> {
+    let mut matched = String::new();
+    let mut chars = input.chars();
+
+    match chars.next() {
+        Some(next) if next.is_alphabetic() => matched.push(next),
+        _ => return Err(input)
+    }
+
+    while let Some(next) = chars.next() {
+        if next.is_alphanumeric() || next == '-' {
+            matched.push(next);
+        } else {
+            break;
+        }
+    }
+
+    let next_index = matched.len();
+    Ok((&input[next_index..], matched))
 }
 
 #[test]
