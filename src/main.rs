@@ -1,3 +1,11 @@
+
+type ParseResult<'a, Output> = Result<(&'a str, Output), &'a str>;
+
+
+trait Parser<'a, Output> {
+    fn parse(&self, input: &'a str) -> ParseResult<'a, Output>;
+}
+
 fn main() {
     let input = "yapple";
     // let result = the_letter_a(input);
@@ -53,6 +61,14 @@ where
         },
         Err(err) => Err(err),
     }
+}
+
+fn map<P, F, A, B>(parser: P, map_fn: F) -> impl Fn(&str) -> Result<(&str, B), &str>
+where
+    P: Fn(&str) -> Result<(&str, A), &str>,
+    F: Fn(A) -> B,
+{
+    move |input| parser(input).map(|(next_input, result)| (next_input, map_fn(result)))
 }
 
 #[test]
